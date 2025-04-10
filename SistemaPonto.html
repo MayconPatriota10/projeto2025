@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Ponto Eletrônico</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f4f6f9;
+      font-family: Arial, sans-serif;
+    }
+    .container {
+      margin-top: 100px;
+    }
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <h3 class="text-center">Sistema de Ponto Eletrônico</h3>
+      <form id="pontoForm">
+        <div class="form-group">
+          <label for="cpf">CPF do Aluno:</label>
+          <input type="text" class="form-control" id="cpf" placeholder="Digite o CPF" required maxlength="14" oninput="mascaraCPF(this)">
+        </div>
+        
+        <div class="form-group">
+          <label>Selecione a Ação:</label>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="acao" id="entrada" value="entrada" required>
+            <label class="form-check-label" for="entrada">
+              Entrada
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="acao" id="saida" value="saida">
+            <label class="form-check-label" for="saida">
+              Saída
+            </label>
+          </div>
+        </div>
+        
+        <button type="submit" class="btn btn-primary w-100">Registrar Ponto</button>
+      </form>
+      <div id="mensagem" class="mt-3"></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  document.getElementById('pontoForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    var cpf = document.getElementById('cpf').value;
+    var acao = document.querySelector('input[name="acao"]:checked');
+
+    // Verificar se o CPF está cadastrado no localStorage
+    let alunos = JSON.parse(localStorage.getItem('alunos')) || [];
+    var aluno = alunos.find(aluno => aluno.cpf === cpf);
+    
+    if (aluno && acao) {
+      var acaoTexto = acao.value === 'entrada' ? 'Entrada' : 'Saída';
+      document.getElementById('mensagem').innerHTML = 
+        `<div class="alert alert-success">Ponto registrado com sucesso! Ação: ${acaoTexto} para o aluno: ${aluno.nome}</div>`;
+    } else {
+      document.getElementById('mensagem').innerHTML = 
+        `<div class="alert alert-danger">CPF não cadastrado ou ação não selecionada. Tente novamente.</div>`;
+    }
+  });
+
+  function mascaraCPF(campo) {
+    var cpf = campo.value.replace(/\D/g, ''); // Remove qualquer caractere que não seja número
+    if (cpf.length <= 11) {
+      campo.value = cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+    }
+  }
+</script>
+
+</body>
+</html>
