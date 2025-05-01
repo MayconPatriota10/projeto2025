@@ -1,0 +1,121 @@
+body {
+    background: linear-gradient(135deg, #6b7280, #1e3a8a, #7e22ce); /* Gradiente de cinza escuro para azul escuro e roxo */
+    height: 100vh; /* Define altura como 100% do viewport */
+    margin: 0;
+    padding: 0; /* Remove qualquer padding padrão */
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #ffffff;
+    overflow: hidden; /* Remove qualquer rolagem */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.container {
+    background: rgba(255, 255, 255, 0.95); /* Fundo branco com leve transparência */
+    border-radius: 15px;
+    padding: 1.5rem; /* Padding ajustado */
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    max-width: 900px; /* Maior para acomodar a tabela */
+    width: 100%;
+    height: fit-content; /* Ajusta altura ao conteúdo */
+    max-height: 90vh; /* Limita altura máxima */
+    overflow: hidden; /* Remove rolagem interna */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+h3 {
+    color: #1e3a8a; /* Azul escuro para o título */
+    font-weight: 700;
+    margin-bottom: 1rem; /* Margem reduzida */
+    font-size: 1.5rem; /* Tamanho da fonte ajustado */
+}
+
+.table {
+    background-color: #ffffff; /* Fundo branco para a tabela */
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.table th,
+.table td {
+    padding: 0.75rem;
+    vertical-align: middle;
+    font-size: 0.9rem; /* Tamanho da fonte reduzido */
+    color: #1e3a8a; /* Azul escuro para o texto */
+}
+
+.table th {
+    background-color: #e5e7eb; /* Cinza claro para o cabeçalho */
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #f9fafb; /* Cinza muito claro para linhas ímpares */
+}
+
+.table-bordered th,
+.table-bordered td {
+    border: 1px solid #d1d5db; /* Bordas cinza claro */
+}
+
+.alert {
+    border-radius: 8px;
+    padding: 0.5rem;
+    font-size: 0.85rem;
+}
+
+.alert-info {
+    background-color: #e0f2fe;
+    color: #075985;
+}
+
+.btn-secondary {
+    background-color: #6b7280; /* Cinza escuro para o botão */
+    border: none;
+    border-radius: 8px;
+    padding: 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-secondary:hover {
+    background-color: #7e22ce; /* Roxo no hover */
+    transform: translateY(-2px);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+        max-height: 85vh;
+    }
+
+    h3 {
+        font-size: 1.3rem;
+    }
+
+    .table th,
+    .table td {
+        font-size: 0.85rem;
+    }
+
+    .btn-secondary {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .table-responsive {
+        font-size: 0.8rem;
+    }
+
+    .table th,
+    .table td {
+        padding: 0.5rem;
+    }
+}
