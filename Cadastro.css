@@ -1,0 +1,115 @@
+body {
+    background: linear-gradient(135deg, #6b7280, #1e3a8a, #7e22ce); /* Gradiente de cinza escuro para azul escuro e roxo */
+    height: 100vh; /* Define altura como 100% do viewport */
+    margin: 0;
+    padding: 0; /* Remove qualquer padding padrão */
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #ffffff;
+    overflow: hidden; /* Remove qualquer rolagem */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.container {
+    background: rgba(255, 255, 255, 0.95); /* Fundo branco com leve transparência */
+    border-radius: 15px;
+    padding: 1.5rem; /* Reduz padding para economizar espaço */
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    max-width: 500px;
+    width: 100%;
+    height: fit-content; /* Ajusta altura ao conteúdo */
+    max-height: 90vh; /* Limita altura máxima para caber no viewport */
+    overflow: hidden; /* Remove qualquer rolagem interna */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+h3 {
+    color: #1e3a8a; /* Azul escuro para o título */
+    font-weight: 700;
+    margin-bottom: 1rem; /* Reduz margem para economizar espaço */
+    font-size: 1.5rem; /* Reduz tamanho da fonte */
+}
+
+.form-group {
+    margin-bottom: 0.8rem; /* Reduz margem para economizar espaço */
+}
+
+.form-group label {
+    color: #1e3a8a;
+    font-weight: 500;
+    margin-bottom: 0.3rem; /* Reduz margem para economizar espaço */
+    display: block;
+    font-size: 0.9rem; /* Reduz tamanho da fonte */
+}
+
+.form-control {
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 0.5rem; /* Reduz padding para economizar espaço */
+    font-size: 0.9rem; /* Reduz tamanho da fonte */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #7e22ce; /* Roxo para o foco */
+    box-shadow: 0 0 8px rgba(126, 34, 206, 0.3);
+}
+
+.btn-primary {
+    background-color: #1e3a8a; /* Azul escuro para o botão */
+    border: none;
+    border-radius: 8px;
+    padding: 0.5rem; /* Reduz padding para economizar espaço */
+    font-size: 1rem; /* Reduz tamanho da fonte */
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-primary:hover {
+    background-color: #7e22ce; /* Roxo no hover */
+    transform: translateY(-2px);
+}
+
+.alert {
+    border-radius: 8px;
+    padding: 0.5rem; /* Reduz padding para economizar espaço */
+    font-size: 0.85rem; /* Reduz tamanho da fonte */
+}
+
+.alert-success {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+.alert-danger {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+/* Responsividade */
+@media (max-width: 576px) {
+    .container {
+        padding: 1rem; /* Reduz ainda mais o padding */
+        max-height: 85vh; /* Ajusta altura para telas menores */
+    }
+
+    h3 {
+        font-size: 1.3rem; /* Reduz tamanho da fonte */
+    }
+
+    .form-control {
+        font-size: 0.85rem; /* Reduz tamanho da fonte */
+    }
+
+    .btn-primary {
+        font-size: 0.9rem; /* Reduz tamanho da fonte */
+    }
+
+    .form-group label {
+        font-size: 0.85rem; /* Reduz tamanho da fonte */
+    }
+}
