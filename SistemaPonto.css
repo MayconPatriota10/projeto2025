@@ -87,6 +87,21 @@ h3 {
     transform: translateY(-2px);
 }
 
+.btn-secondary {
+    background-color: #6b7280; /* Cinza escuro para o botão */
+    border: none;
+    border-radius: 8px;
+    padding: 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-secondary:hover {
+    background-color: #7e22ce; /* Roxo no hover */
+    transform: translateY(-2px);
+}
+
 .alert {
     border-radius: 8px;
     padding: 0.5rem; /* Padding reduzido */
@@ -119,6 +134,10 @@ h3 {
     }
 
     .btn-primary {
+        font-size: 0.9rem; /* Tamanho da fonte reduzido */
+    }
+
+    .btn-secondary {
         font-size: 0.9rem; /* Tamanho da fonte reduzido */
     }
 

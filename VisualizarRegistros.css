@@ -1,40 +1,66 @@
 body {
-    background: linear-gradient(135deg, #6b7280, #1e3a8a, #7e22ce); /* Gradiente de cinza escuro para azul escuro e roxo */
-    height: 100vh; /* Define altura como 100% do viewport */
+    background: linear-gradient(135deg, #6b7280, #1e3a8a, #7e22ce);
+    height: 100vh;
     margin: 0;
-    padding: 0; /* Remove qualquer padding padrão */
+    padding: 0;
     font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: #ffffff;
-    overflow: hidden; /* Remove qualquer rolagem */
+    overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 .container {
-    background: rgba(255, 255, 255, 0.95); /* Fundo branco com leve transparência */
+    background: rgba(255, 255, 255, 0.95);
     border-radius: 15px;
-    padding: 1.5rem; /* Padding ajustado */
+    padding: 1.5rem;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-    max-width: 900px; /* Maior para acomodar a tabela */
+    max-width: 900px;
     width: 100%;
-    height: fit-content; /* Ajusta altura ao conteúdo */
-    max-height: 90vh; /* Limita altura máxima */
-    overflow: hidden; /* Remove rolagem interna */
+    height: fit-content;
+    max-height: 90vh;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     justify-content: center;
 }
 
 h3 {
-    color: #1e3a8a; /* Azul escuro para o título */
+    color: #1e3a8a;
     font-weight: 700;
-    margin-bottom: 1rem; /* Margem reduzida */
-    font-size: 1.5rem; /* Tamanho da fonte ajustado */
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 0.8rem;
+}
+
+.form-group label {
+    color: #1e3a8a;
+    font-weight: 500;
+    margin-bottom: 0.3rem;
+    display: block;
+    font-size: 0.9rem;
+}
+
+.form-control {
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 0.5rem;
+    font-size: 0.9rem;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #7e22ce;
+    box-shadow: 0 0 8px rgba(126, 34, 206, 0.3);
 }
 
 .table {
-    background-color: #ffffff; /* Fundo branco para a tabela */
+    background-color: #ffffff;
     border-collapse: separate;
     border-spacing: 0;
 }
@@ -43,23 +69,23 @@ h3 {
 .table td {
     padding: 0.75rem;
     vertical-align: middle;
-    font-size: 0.9rem; /* Tamanho da fonte reduzido */
-    color: #1e3a8a; /* Azul escuro para o texto */
+    font-size: 0.9rem;
+    color: #1e3a8a;
 }
 
 .table th {
-    background-color: #e5e7eb; /* Cinza claro para o cabeçalho */
+    background-color: #e5e7eb;
     font-weight: 600;
     text-transform: uppercase;
 }
 
 .table-striped tbody tr:nth-of-type(odd) {
-    background-color: #f9fafb; /* Cinza muito claro para linhas ímpares */
+    background-color: #f9fafb;
 }
 
 .table-bordered th,
 .table-bordered td {
-    border: 1px solid #d1d5db; /* Bordas cinza claro */
+    border: 1px solid #d1d5db;
 }
 
 .alert {
@@ -74,7 +100,7 @@ h3 {
 }
 
 .btn-secondary {
-    background-color: #6b7280; /* Cinza escuro para o botão */
+    background-color: #6b7280;
     border: none;
     border-radius: 8px;
     padding: 0.5rem;
@@ -84,11 +110,10 @@ h3 {
 }
 
 .btn-secondary:hover {
-    background-color: #7e22ce; /* Roxo no hover */
+    background-color: #7e22ce;
     transform: translateY(-2px);
 }
 
-/* Responsividade */
 @media (max-width: 768px) {
     .container {
         padding: 1rem;
@@ -106,6 +131,14 @@ h3 {
 
     .btn-secondary {
         font-size: 0.9rem;
+    }
+
+    .form-control {
+        font-size: 0.85rem;
+    }
+
+    .form-group label {
+        font-size: 0.85rem;
     }
 }
 
