@@ -26,8 +26,8 @@
             <label for="search">Pesquisar por Nome ou CPF:</label>
             <input type="text" class="form-control" id="search" placeholder="Digite o nome ou CPF" oninput="updateTable()">
         </div>
-        <div class="alert alert-info mb-3" id="totalEntradas">
-            Total de alunos que registraram entrada hoje: <span id="count">0</span>
+        <div class="alert alert-info mb-3" id="totalAlunos">
+            Total de alunos que registraram ponto hoje: <span id="count">0</span>
         </div>
         <div class="table-responsive">
             <table class="table table-striped table-bordered">
@@ -35,9 +35,9 @@
                     <tr>
                         <th>Nome</th>
                         <th>CPF</th>
-                        <th>Ação</th>
+                        <th>Horário de Entrada</th>
+                        <th>Horário de Saída</th>
                         <th>Data</th>
-                        <th>Horário</th>
                     </tr>
                 </thead>
                 <tbody id="registrosTable">
@@ -48,54 +48,97 @@
         <a href="index.html" class="btn btn-secondary w-100 mt-3">Voltar</a>
     </div>
     <script>
-        // Sample data for demonstration
-        const sampleData = [
-            { nome: "João Silva", cpf: "123.456.789-00", turma: "1anoA", acao: "Entrada", data: "2025-07-26", horario: "08:00" },
-            { nome: "Maria Souza", cpf: "987.654.321-00", turma: "1anoB", acao: "Saída", data: "2025-07-26", horario: "14:00" },
-            { nome: "Pedro Santos", cpf: "111.222.333-44", turma: "2anoA", acao: "Entrada", data: "2025-07-26", horario: "09:00" },
-            { nome: "Ana Lima", cpf: "555.666.777-88", turma: "1anoA", acao: "Entrada", data: "2025-07-26", horario: "08:30" },
-            { nome: "Lucas Pereira", cpf: "444.555.666-77", turma: "3anoB", acao: "Entrada", data: "2025-07-25", horario: "07:45" }
-        ];
+        // Dados compartilhados (simulando backend)
+        const attendanceData = JSON.parse(localStorage.getItem('attendanceData')) || [];
 
         function updateTable() {
             const selectedClass = document.getElementById("turma").value;
             const searchQuery = document.getElementById("search").value.toLowerCase();
             const tbody = document.getElementById("registrosTable");
-            const today = new Date().toISOString().split("T")[0]; // Current date in YYYY-MM-DD
+            const today = "2025-07-26"; // Data fixa para consistência
             tbody.innerHTML = "";
 
-            const filteredData = sampleData.filter(record => {
-                const matchesClass = selectedClass === "" || record.turma === selectedClass;
-                const matchesDate = record.data === today;
-                const matchesSearch = record.nome.toLowerCase().includes(searchQuery) || 
-                                     record.cpf.toLowerCase().includes(searchQuery);
-                return matchesClass && matchesDate && matchesSearch;
+            // Filtra registros válidos
+            const validRecords = attendanceData.filter(record => {
+                return record &&
+                       record.data === today &&
+                       record.horario &&
+                       record.horario.match(/^\d{2}:\d{2}$/) &&
+                       ['Entrada', 'Saída'].includes(record.acao) &&
+                       record.nome && record.nome.trim() &&
+                       record.cpf && record.cpf.trim();
             });
 
+            // Exibe mensagem se não houver registros
+            if (validRecords.length === 0) {
+                const row = document.createElement("tr");
+                row.innerHTML = `<td colspan="5" class="text-center">Nenhum registro de ponto encontrado para hoje.</td>`;
+                tbody.appendChild(row);
+                console.log("Nenhum registro válido encontrado em attendanceData:", attendanceData);
+                return;
+            }
+
+            // Agrupa registros por nome e CPF
+            const groupedData = {};
+            validRecords.forEach(record => {
+                const key = `${record.nome}|${record.cpf}`;
+                if (!groupedData[key]) {
+                    groupedData[key] = {
+                        nome: record.nome,
+                        cpf: record.cpf,
+                        turma: record.turma || 'Desconhecida',
+                        entrada: null,
+                        saida: null,
+                        data: record.data
+                    };
+                }
+                if (record.acao === "Entrada") {
+                    groupedData[key].entrada = record.horario;
+                } else if (record.acao === "Saída") {
+                    groupedData[key].saida = record.horario;
+                }
+            });
+
+            // Filtra por turma, pesquisa e registros com entrada ou saída
+            const filteredData = Object.values(groupedData)
+                .filter(record => (record.entrada || record.saida) &&
+                                 (selectedClass === "" || record.turma === selectedClass) &&
+                                 (record.nome.toLowerCase().includes(searchQuery) || 
+                                  record.cpf.toLowerCase().includes(searchQuery)));
+
+            // Preenche a tabela
             filteredData.forEach(record => {
                 const row = document.createElement("tr");
                 row.innerHTML = `
                     <td>${record.nome}</td>
                     <td>${record.cpf}</td>
-                    <td>${record.acao}</td>
+                    <td>${record.entrada || '-'}</td>
+                    <td>${record.saida || '-'}</td>
                     <td>${record.data}</td>
-                    <td>${record.horario}</td>
                 `;
                 tbody.appendChild(row);
             });
 
-            updateTotalEntradas();
+            console.log("Registros exibidos:", filteredData);
+            updateTotalAlunos();
         }
 
-        function updateTotalEntradas() {
+        function updateTotalAlunos() {
             const selectedClass = document.getElementById("turma").value;
-            const today = new Date().toISOString().split("T")[0];
-            const count = sampleData.filter(record => 
-                record.acao === "Entrada" && 
-                record.data === today && 
-                (selectedClass === "" || record.turma === selectedClass)
-            ).length;
-            document.getElementById("count").textContent = count;
+            const today = "2025-07-26";
+            const uniqueStudents = new Set(
+                attendanceData
+                    .filter(record => record &&
+                                     record.data === today &&
+                                     record.horario &&
+                                     record.horario.match(/^\d{2}:\d{2}$/) &&
+                                     ['Entrada', 'Saída'].includes(record.acao) &&
+                                     record.nome && record.nome.trim() &&
+                                     record.cpf && record.cpf.trim() &&
+                                     (selectedClass === "" || record.turma === selectedClass))
+                    .map(record => record.cpf)
+            );
+            document.getElementById("count").textContent = uniqueStudents.size;
         }
 
         window.onload = updateTable;
