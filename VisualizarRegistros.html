@@ -6,6 +6,8 @@
     <title>Registros de Ponto</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="VisualizarRegistros.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -45,6 +47,7 @@
                 </tbody>
             </table>
         </div>
+        <button class="btn btn-success w-100 mt-3" onclick="generatePDF()">Gerar PDF</button>
         <a href="index.html" class="btn btn-secondary w-100 mt-3">Voltar</a>
     </div>
     <script>
@@ -139,6 +142,140 @@
                     .map(record => record.cpf)
             );
             document.getElementById("count").textContent = uniqueStudents.size;
+        }
+
+        function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ orientation: 'landscape' });
+            const selectedClass = document.getElementById("turma").value;
+            const searchQuery = document.getElementById("search").value.toLowerCase();
+            const today = "2025-07-26";
+
+            // Filtra registros válidos
+            const validRecords = attendanceData.filter(record => {
+                return record &&
+                       record.data === today &&
+                       record.horario &&
+                       record.horario.match(/^\d{2}:\d{2}$/) &&
+                       ['Entrada', 'Saída'].includes(record.acao) &&
+                       record.nome && record.nome.trim() &&
+                       record.cpf && record.cpf.trim();
+            });
+
+            // Agrupa registros por nome e CPF
+            const groupedData = {};
+            validRecords.forEach(record => {
+                const key = `${record.nome}|${record.cpf}`;
+                if (!groupedData[key]) {
+                    groupedData[key] = {
+                        nome: record.nome,
+                        cpf: record.cpf,
+                        turma: record.turma || 'Desconhecida',
+                        entrada: null,
+                        saida: null,
+                        data: record.data
+                    };
+                }
+                if (record.acao === "Entrada") {
+                    groupedData[key].entrada = record.horario;
+                } else if (record.acao === "Saída") {
+                    groupedData[key].saida = record.horario;
+                }
+            });
+
+            // Filtra por turma e pesquisa
+            const filteredData = Object.values(groupedData)
+                .filter(record => (record.entrada || record.saida) &&
+                                 (selectedClass === "" || record.turma === selectedClass) &&
+                                 (record.nome.toLowerCase().includes(searchQuery) || 
+                                  record.cpf.toLowerCase().includes(searchQuery)));
+
+            if (filteredData.length === 0) {
+                alert("Nenhum registro encontrado para gerar o PDF.");
+                return;
+            }
+
+            // Configurações do PDF
+            doc.setFontSize(16);
+            doc.text("Registros de Ponto - 26/07/2025", 14, 20);
+            doc.setFontSize(12);
+            doc.text("Sistema de Ponto Eletrônico", 14, 30);
+
+            // Agrupa por turma
+            const classes = ['1anoA', '1anoB', '2anoA', '2anoB', '3anoA', '3anoB'];
+            const classNames = {
+                '1anoA': '1º Ano A',
+                '1anoB': '1º Ano B',
+                '2anoA': '2º Ano A',
+                '2anoB': '2º Ano B',
+                '3anoA': '3º Ano A',
+                '3anoB': '3º Ano B'
+            };
+            let yOffset = 40;
+
+            if (selectedClass === "") {
+                // Todas as turmas
+                classes.forEach(cls => {
+                    const classRecords = filteredData.filter(record => record.turma === cls);
+                    if (classRecords.length > 0) {
+                        doc.setFontSize(14);
+                        doc.text(classNames[cls], 14, yOffset);
+                        yOffset += 10;
+
+                        const tableData = classRecords.map(record => [
+                            record.nome,
+                            record.cpf,
+                            record.entrada || '-',
+                            record.saida || '-',
+                            record.data
+                        ]);
+
+                        doc.autoTable({
+                            startY: yOffset,
+                            head: [['Nome', 'CPF', 'Horário de Entrada', 'Horário de Saída', 'Data']],
+                            body: tableData,
+                            styles: { fontSize: 10, cellPadding: 3 },
+                            headStyles: { fillColor: [30, 58, 138], textColor: [255, 255, 255] },
+                            alternateRowStyles: { fillColor: [249, 250, 251] },
+                            margin: { top: 10, bottom: 10 }
+                        });
+
+                        yOffset = doc.lastAutoTable.finalY + 15;
+                    }
+                });
+            } else {
+                // Turma específica
+                const classRecords = filteredData.filter(record => record.turma === selectedClass);
+                if (classRecords.length > 0) {
+                    doc.setFontSize(14);
+                    doc.text(classNames[selectedClass], 14, yOffset);
+                    yOffset += 10;
+
+                    const tableData = classRecords.map(record => [
+                        record.nome,
+                        record.cpf,
+                        record.entrada || '-',
+                        record.saida || '-',
+                        record.data
+                    ]);
+
+                    doc.autoTable({
+                        startY: yOffset,
+                        head: [['Nome', 'CPF', 'Horário de Entrada', 'Horário de Saída', 'Data']],
+                        body: tableData,
+                        styles: { fontSize: 10, cellPadding: 3 },
+                        headStyles: { fillColor: [30, 58, 138], textColor: [255, 255, 255] },
+                        alternateRowStyles: { fillColor: [249, 250, 251] },
+                        margin: { top: 10, bottom: 10 }
+                    });
+                } else {
+                    doc.setFontSize(12);
+                    doc.text("Nenhum registro encontrado para a turma selecionada.", 14, yOffset);
+                }
+            }
+
+            // Salva o PDF
+            doc.save('Registros_Ponto_2025-07-26.pdf');
         }
 
         window.onload = updateTable;
