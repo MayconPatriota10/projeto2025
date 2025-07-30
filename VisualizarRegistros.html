@@ -54,17 +54,21 @@
         // Dados compartilhados (simulando backend)
         const attendanceData = JSON.parse(localStorage.getItem('attendanceData')) || [];
 
+        // Função para formatar a data de YYYY-MM-DD para DD/MM/YYYY
+        function formatarData(data) {
+            const [ano, mes, dia] = data.split('-');
+            return `${dia}/${mes}/${ano}`;
+        }
+
         function updateTable() {
             const selectedClass = document.getElementById("turma").value;
             const searchQuery = document.getElementById("search").value.toLowerCase();
             const tbody = document.getElementById("registrosTable");
-            const today = "2025-07-26"; // Data fixa para consistência
             tbody.innerHTML = "";
 
             // Filtra registros válidos
             const validRecords = attendanceData.filter(record => {
                 return record &&
-                       record.data === today &&
                        record.horario &&
                        record.horario.match(/^\d{2}:\d{2}$/) &&
                        ['Entrada', 'Saída'].includes(record.acao) &&
@@ -75,7 +79,7 @@
             // Exibe mensagem se não houver registros
             if (validRecords.length === 0) {
                 const row = document.createElement("tr");
-                row.innerHTML = `<td colspan="5" class="text-center">Nenhum registro de ponto encontrado para hoje.</td>`;
+                row.innerHTML = `<td colspan="5" class="text-center">Nenhum registro de ponto encontrado.</td>`;
                 tbody.appendChild(row);
                 console.log("Nenhum registro válido encontrado em attendanceData:", attendanceData);
                 return;
@@ -117,7 +121,7 @@
                     <td>${record.cpf}</td>
                     <td>${record.entrada || '-'}</td>
                     <td>${record.saida || '-'}</td>
-                    <td>${record.data}</td>
+                    <td>${formatarData(record.data)}</td>
                 `;
                 tbody.appendChild(row);
             });
@@ -128,16 +132,17 @@
 
         function updateTotalAlunos() {
             const selectedClass = document.getElementById("turma").value;
-            const today = "2025-07-26";
+            const today = new Date().toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' })
+                .split('/').reverse().join('-'); // Formato YYYY-MM-DD
             const uniqueStudents = new Set(
                 attendanceData
                     .filter(record => record &&
-                                     record.data === today &&
                                      record.horario &&
                                      record.horario.match(/^\d{2}:\d{2}$/) &&
                                      ['Entrada', 'Saída'].includes(record.acao) &&
                                      record.nome && record.nome.trim() &&
                                      record.cpf && record.cpf.trim() &&
+                                     record.data === today &&
                                      (selectedClass === "" || record.turma === selectedClass))
                     .map(record => record.cpf)
             );
@@ -149,12 +154,15 @@
             const doc = new jsPDF({ orientation: 'landscape' });
             const selectedClass = document.getElementById("turma").value;
             const searchQuery = document.getElementById("search").value.toLowerCase();
-            const today = "2025-07-26";
+            // Usa a data mais recente dos registros ou a data atual se não houver registros
+            const latestDate = attendanceData.length > 0 
+                ? attendanceData.reduce((max, record) => record.data > max ? record.data : max, attendanceData[0].data)
+                : new Date().toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' })
+                    .split('/').reverse().join('-');
 
             // Filtra registros válidos
             const validRecords = attendanceData.filter(record => {
                 return record &&
-                       record.data === today &&
                        record.horario &&
                        record.horario.match(/^\d{2}:\d{2}$/) &&
                        ['Entrada', 'Saída'].includes(record.acao) &&
@@ -197,7 +205,7 @@
 
             // Configurações do PDF
             doc.setFontSize(16);
-            doc.text("Registros de Ponto - 26/07/2025", 14, 20);
+            doc.text(`Registros de Ponto - ${formatarData(latestDate)}`, 14, 20);
             doc.setFontSize(12);
             doc.text("Sistema de Ponto Eletrônico", 14, 30);
 
@@ -227,7 +235,7 @@
                             record.cpf,
                             record.entrada || '-',
                             record.saida || '-',
-                            record.data
+                            formatarData(record.data)
                         ]);
 
                         doc.autoTable({
@@ -256,7 +264,7 @@
                         record.cpf,
                         record.entrada || '-',
                         record.saida || '-',
-                        record.data
+                        formatarData(record.data)
                     ]);
 
                     doc.autoTable({
@@ -275,7 +283,7 @@
             }
 
             // Salva o PDF
-            doc.save('Registros_Ponto_2025-07-26.pdf');
+            doc.save(`Registros_Ponto_${latestDate}.pdf`);
         }
 
         window.onload = updateTable;

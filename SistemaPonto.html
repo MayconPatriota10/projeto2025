@@ -13,7 +13,7 @@
         <form id="pontoForm">
             <div class="form-group">
                 <label for="cpf">CPF do Aluno:</label>
-                <input type="text" class="form-control" id="cpf" list="cpfList" placeholder="Digite ou selecione o CPF">
+                <input type="text" class="form-control" id="cpf" list="cpfList" placeholder="Digite ou selecione o CPF (xxx.xxx.xxx-xx)" pattern="\d{3}\.\d{3}\.\d{3}-\d{2}" maxlength="14" required>
                 <datalist id="cpfList">
                     <!-- CPFs serão preenchidos dinamicamente -->
                 </datalist>
@@ -80,12 +80,41 @@
             });
         }
 
+        // Formata o CPF enquanto o usuário digita
+        document.getElementById("cpf").addEventListener("input", function(e) {
+            let value = e.target.value.replace(/[^\d]/g, ''); // Remove tudo que não é número
+            if (value.length > 11) {
+                value = value.slice(0, 11); // Limita a 11 dígitos
+            }
+            // Formata o CPF no padrão xxx.xxx.xxx-xx
+            if (value.length === 11) {
+                e.target.value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+            } else if (value.length > 6) {
+                e.target.value = value.replace(/(\d{3})(\d{3})(\d{1,3})/, '$1.$2.$3');
+            } else if (value.length > 3) {
+                e.target.value = value.replace(/(\d{3})(\d{1,3})/, '$1.$2');
+            } else {
+                e.target.value = value;
+            }
+        });
+
+        // Impede a entrada de caracteres não numéricos
+        document.getElementById("cpf").addEventListener("keypress", function(e) {
+            const charCode = e.charCode;
+            if (charCode < 48 || charCode > 57) {
+                e.preventDefault(); // Bloqueia caracteres que não são números
+            }
+        });
+
         // Manipula o envio do formulário
         document.getElementById("pontoForm").addEventListener("submit", function(event) {
             event.preventDefault();
             const cpf = document.getElementById("cpf").value.replace(/[^\d]+/g, '');
             const acao = document.querySelector("input[name='acao']:checked")?.value;
-            const today = "2025-07-26"; // Data fixa para consistência
+            // Obtém a data local no fuso horário de Brasília (America/Sao_Paulo)
+            const localDate = new Date().toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' });
+            const [dia, mes, ano] = localDate.split('/');
+            const today = `${ano}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`; // Formato YYYY-MM-DD
 
             // Validações
             if (!cpf) {
@@ -113,7 +142,7 @@
                 alert("Não é possível registrar uma Saída sem uma Entrada registrada hoje para este CPF.");
                 return;
             }
-            if (acao === "Saída" && hasRecordToday(cpf, today, "Saída")) {
+            if (acao === "Saída" && hasRecordToday(cpf, today)) {
                 alert("Saída já registrada hoje para este CPF.");
                 return;
             }
@@ -125,7 +154,7 @@
                 turma: student.turma,
                 acao: acao,
                 data: today,
-                horario: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', hour12: false })
+                horario: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'America/Sao_Paulo' })
             };
             attendanceData.push(newRecord);
             localStorage.setItem('attendanceData', JSON.stringify(attendanceData));
